@@ -110,6 +110,150 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
+  /user/accounts:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Accounts Module
+      summary: User Bank Accounts
+      description: API for fetching user bank accounts
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: User bank accounts retrieved successfully
+          schema:
+            $ref: '#/definitions/BankAccounts'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /accounts/{ID}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Accounts Module
+      summary: Get a specific bank account
+      description: API for retrieving a specific bank account by ID
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: User bank account retrieved successfully
+          schema:
+            $ref: '#/definitions/BankAccounts'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Account not found
+        '500':
+          description: Internal Server Error
+  /accounts/{ID}/transactions:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Get transactions for a specific account
+      description: API for retrieving transactions of a specific account
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: accountId
+          description: The bank account ID to retrieve transactions for
+          type: string
+          required: true
+        - in: query
+          name: page
+          description: Page number to retrieve
+          type: integer
+          format: int
+          default: 1
+          required: false
+        - in: query
+          name: pageSize
+          description: Number of items per page
+          type: integer
+          format: int
+          default: 10
+          required: false
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transactions retrieved successfully
+          schema:
+            $ref: '#/definitions/Transactions'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Account not found
+        '500':
+          description: Internal Server Error
+  /transactions/{ID}:
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Update transaction details
+      description: API for updating the category and notes of a specific transaction
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: accountId
+          description: The bank account ID
+          type: string
+          required: true
+        - in: path
+          name: transactionId
+          description: The transaction ID to update
+          type: string
+          required: true
+        - in: body
+          name: body
+          description: Update transaction category
+          required: true
+          schema:
+            type: object
+            properties:
+              category:
+                type: string
+              notes:
+                type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction details updated successfully
+          schema:
+            $ref: '#/definitions/Transactions'
+        '400':
+          description: Invalid Fields
+        '401':
+          description: Unauthorized
+        '404':
+          description: Transaction not found
+        '500':
+          description: Internal Server Error
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -164,3 +308,45 @@ definitions:
         type: string
       lastName:
         type: string
+  BankAccounts:
+    type: object
+    properties:
+      id:
+        type: string
+        description: bank account ID
+      name:
+        type: string
+        description: bank account name
+      balance:
+        type: number
+        description: bank account balance
+      type:
+        type: string
+        description: bank account type
+  Transactions:
+    type: object
+    properties:
+      id:
+        type: string
+        description: transaction ID
+      accountId:
+        type: string
+        description: bank account ID
+      amount:
+        type: number
+        description: transaction amount
+      date:
+        type: string
+        description: transaction date and time
+      balanceAtTransaction:
+        type: number
+        description: account balance at the time of the transaction
+      type:
+        type: string
+        description: transaction type
+      category:
+        type: string
+        description: transaction category
+      notes:
+        type: string
+        description: user notes about the transaction
