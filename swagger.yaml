@@ -134,10 +134,10 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
-  /accounts/{ID}:
+  /accounts/{id}:
     get:
       security:
-        - Bearer: []
+        - BearerAuth: []
       tags:
         - Accounts Module
       summary: Get a specific bank account
@@ -146,6 +146,11 @@ paths:
         - in: header
           name: Authorization
           description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: id
+          description: The bank account ID
+          type: string
           required: true
       produces:
         - application/json
@@ -160,10 +165,10 @@ paths:
           description: Account not found
         '500':
           description: Internal Server Error
-  /accounts/{ID}/transactions:
+  /accounts/{id}/transactions:
     get:
       security:
-        - Bearer: []
+        - BearerAuth: []
       tags:
         - Transactions Module
       summary: Get transactions for a specific account
@@ -174,7 +179,7 @@ paths:
           description: Attach Bearer JWT token
           required: true
         - in: path
-          name: accountId
+          name: id
           description: The bank account ID to retrieve transactions for
           type: string
           required: true
@@ -182,14 +187,14 @@ paths:
           name: page
           description: Page number to retrieve
           type: integer
-          format: int
+          format: int32
           default: 1
           required: false
         - in: query
           name: pageSize
           description: Number of items per page
           type: integer
-          format: int
+          format: int32
           default: 10
           required: false
       produces:
@@ -201,14 +206,16 @@ paths:
             $ref: '#/definitions/Transactions'
         '401':
           description: Unauthorized
+        '403':
+          description: Forbidden
         '404':
           description: Account not found
         '500':
           description: Internal Server Error
-  /transactions/{ID}:
+  /transactions/{id}:
     put:
       security:
-        - Bearer: []
+        - BearerAuth: []
       tags:
         - Transactions Module
       summary: Update transaction details
@@ -219,18 +226,13 @@ paths:
           description: Attach Bearer JWT token
           required: true
         - in: path
-          name: accountId
-          description: The bank account ID
-          type: string
-          required: true
-        - in: path
-          name: transactionId
+          name: id
           description: The transaction ID to update
           type: string
           required: true
         - in: body
           name: body
-          description: Update transaction category
+          description: Update transaction category and notes
           required: true
           schema:
             type: object
@@ -250,6 +252,8 @@ paths:
           description: Invalid Fields
         '401':
           description: Unauthorized
+        '403':
+          description: Forbidden
         '404':
           description: Transaction not found
         '500':
